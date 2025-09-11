@@ -13,35 +13,35 @@ interface IDCardPreviewProps {
 
 export default function IDCardPreview({ userData }: IDCardPreviewProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const captureRef = useRef<HTMLDivElement>(null);
+
+  const getCanvasFromCapture = async () => {
+    if (!captureRef.current) return null;
+    return await html2canvas(captureRef.current, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+  };
 
   const handleDownload = async () => {
-    if (!cardRef.current) {
-      alert("Card preview not available. Please try again.");
-      return;
-    }
-
     setIsGenerating(true);
-
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-      });
-
+      const canvas = await getCanvasFromCapture();
+      if (!canvas) {
+        alert("Card preview not available. Please try again.");
+        return;
+      }
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: [54, 86],
       });
-
       const imgWidth = pdf.internal.pageSize.getWidth();
       const imgHeight = pdf.internal.pageSize.getHeight();
-
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
       pdf.save(
         `${userData.name?.replace(/\s+/g, "_") || "ID_Card"}_ID_Card.pdf`
@@ -55,22 +55,13 @@ export default function IDCardPreview({ userData }: IDCardPreviewProps) {
   };
 
   const handleDownloadImage = async () => {
-    if (!cardRef.current) {
-      alert("Card preview not available. Please try again.");
-      return;
-    }
-
     setIsGenerating(true);
-
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-      });
-
+      const canvas = await getCanvasFromCapture();
+      if (!canvas) {
+        alert("Card preview not available. Please try again.");
+        return;
+      }
       const link = document.createElement("a");
       link.download = `${
         userData.name?.replace(/\s+/g, "_") || "ID_Card"
@@ -87,10 +78,17 @@ export default function IDCardPreview({ userData }: IDCardPreviewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Preview Card */}
+      {/* Visible scaled preview */}
       <div className="flex justify-center">
         <div className="transform scale-75 origin-center">
-          <IDCard ref={cardRef} userData={userData} />
+          <IDCard userData={userData} />
+        </div>
+      </div>
+
+      {/* Hidden 1:1 capture node (kept offscreen) */}
+      <div style={{ position: "absolute", left: -99999, top: -99999 }}>
+        <div ref={captureRef}>
+          <IDCard userData={userData} />
         </div>
       </div>
 
