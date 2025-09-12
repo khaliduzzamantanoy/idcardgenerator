@@ -31,9 +31,7 @@ export default function UserForm({ userData, setUserData }: UserFormProps) {
     setUserData({ ...userData, name: event.target.value });
   };
 
-  const handleStaffTypeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setUserData({ ...userData, staffType: event.target.value });
   };
 
@@ -62,22 +60,24 @@ export default function UserForm({ userData, setUserData }: UserFormProps) {
         </div>
       </div>
 
-      {/* Staff Type Input */}
+      {/* Role Dropdown */}
       <div>
         <label
-          htmlFor="staffType"
+          htmlFor="role"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Staff Type (e.g., PCA)
+          Role Selection
         </label>
-        <input
-          type="text"
-          id="staffType"
-          value={userData.staffType || ""}
-          onChange={handleStaffTypeChange}
-          placeholder="Enter staff type"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
-        />
+        <select
+          id="role"
+          value={userData.staffType || "PCA"}
+          onChange={handleRoleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900"
+        >
+          <option value="PCA">PCA</option>
+          <option value="HHA">HHA</option>
+          <option value="RN">RN</option>
+        </select>
       </div>
 
       {/* Photo Upload */}

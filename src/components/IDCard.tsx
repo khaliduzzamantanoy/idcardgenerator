@@ -9,6 +9,9 @@ interface IDCardProps {
 }
 
 const IDCard = forwardRef<HTMLDivElement, IDCardProps>(({ userData }, ref) => {
+  const role = (userData.staffType || "PCA").toUpperCase();
+  const subtitle = role === "RN" ? "MEDICAL STAFF" : "NON-MEDICAL STAFF";
+
   return (
     <div
       ref={ref}
@@ -64,13 +67,13 @@ const IDCard = forwardRef<HTMLDivElement, IDCardProps>(({ userData }, ref) => {
         className="text-[18px] font-extrabold uppercase leading-none"
         style={{ color: "#5b21b6" }}
       >
-        {userData.staffType?.toUpperCase() || "PCA"}
+        {role}
       </div>
       <div
         className="text-[14px] font-semibold uppercase mb-5"
         style={{ color: "#4b5563" }}
       >
-        Non-Medical Staff
+        {subtitle}
       </div>
 
       {/* Divider (solid to avoid unsupported color functions) */}
